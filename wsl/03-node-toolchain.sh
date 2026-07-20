@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
-# Node via fnm (not nvm), corepack, pnpm pinned to match the source machine.
+# Node via fnm (not nvm), corepack, pnpm pinned to match the source machine,
+# and the Claude Code CLI itself -- ../claude/ only restores its config,
+# something has to actually install the binary that config is for.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 source lib/common.sh
@@ -31,4 +33,11 @@ if [ "$CURRENT_PNPM" = "$PNPM_VERSION" ]; then
 else
   log_changed "pnpm $CURRENT_PNPM -> $PNPM_VERSION"
   corepack prepare "pnpm@${PNPM_VERSION}" --activate
+fi
+
+if have_cmd claude; then
+  log_ok "claude"
+else
+  log_install "@anthropic-ai/claude-code"
+  npm install -g @anthropic-ai/claude-code
 fi
