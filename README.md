@@ -8,7 +8,7 @@ multi-identity SSH setup — without ever committing secrets.
 ## How it's organized
 
 ```
-windows/    PowerShell — winget packages, WSL install
+windows/    PowerShell — winget packages, WSL install, fonts, Windows Terminal
 wsl/        bash — apt packages, zsh/oh-my-zsh/p10k, runtimes, dotfile linking
 home/       tracked whole-file dotfiles (.zshrc, .p10k.zsh, gitconfig template)
 claude/     allowlisted subset of ~/.claude (never the whole directory)
@@ -37,10 +37,12 @@ is a non-secret manifest (names, hosts, aliases, labels) that drives fresh
 **On a brand-new Windows machine:**
 ```powershell
 cd windows
-.\bootstrap.ps1
+powershell -ExecutionPolicy Bypass -File .\bootstrap.ps1
 ```
-Then launch Ubuntu from the Start Menu once (interactive first-run, creates
-your Linux user) before moving to WSL.
+(see `windows/README.md` for why `-ExecutionPolicy Bypass` is there — a
+fresh download commonly comes through flagged as untrusted, which blocks
+unsigned local scripts by default). Then launch Ubuntu from the Start Menu
+once (interactive first-run, creates your Linux user) before moving to WSL.
 
 **Inside WSL:** this repo is a **private** GitHub repo, so `git clone` alone
 won't work yet on a fresh machine — install `gh` and authenticate first,

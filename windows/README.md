@@ -6,8 +6,15 @@ Desktop, will prompt via UAC on their own):
 
 ```powershell
 cd windows
-.\bootstrap.ps1
+powershell -ExecutionPolicy Bypass -File .\bootstrap.ps1
 ```
+
+`-ExecutionPolicy Bypass` is scoped to this one process, not a system-wide
+change — it's there because Windows' default policy refuses to run
+*any* unsigned local script, including these, and a fresh download from
+GitHub commonly comes through flagged as untrusted too. If you'd rather
+not bypass it, right-click each `.ps1` → Properties → Unblock (or
+`Get-ChildItem -Recurse *.ps1 | Unblock-File`) before running.
 
 ## What it does
 
@@ -19,13 +26,10 @@ cd windows
    On a genuinely fresh machine this commonly requires a **reboot** — the
    script tells you when that happened; re-run `bootstrap.ps1` afterward,
    already-done steps no-op.
-
-(There used to be a font-install + Windows Terminal font-patch step here.
-Dropped: Nerd Font glyphs never rendered reliably in this Windows Terminal
-setup anyway, so it was two extra fragile scripts — a font downloader and a
-JSON patcher — solving a problem that didn't actually exist day to day. The
-zsh prompt/theme is unchanged; it just runs without icons, same as it
-already did on the source machine.)
+3. **`03-fonts.ps1`** — installs MesloLGS NF (powerlevel10k's font) for the
+   current user, no admin needed.
+4. **`04-windows-terminal.ps1`** — sets that font on the Ubuntu profile and
+   confirms it's the default profile, backing up `settings.json` first.
 
 ## Manual steps this doesn't cover
 

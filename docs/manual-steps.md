@@ -39,8 +39,8 @@ since it's how you clone this (private) repo in the first place. See
 
 ## Verify it all worked
 
-- New shell / `exec zsh` — prompt renders (no Nerd Font/icons by design —
-  see `docs/open-questions.md`).
+- New shell / `exec zsh` — prompt renders with icons (needs the Nerd Font
+  from `windows/03-fonts.ps1` set on the Windows Terminal profile).
 - `ssh-add -l` lists all 4 identity keys.
 - `ssh -T github-personal` (etc.) succeeds for each alias once the pubkey
   is uploaded.

@@ -5,7 +5,9 @@ $here = $PSScriptRoot
 
 $steps = @(
     "01-winget-packages.ps1",
-    "02-install-wsl.ps1"
+    "02-install-wsl.ps1",
+    "03-fonts.ps1",
+    "04-windows-terminal.ps1"
 )
 
 foreach ($step in $steps) {
