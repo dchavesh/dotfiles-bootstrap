@@ -1,0 +1,5 @@
+# Copied to ~/.zshrc.local on first bootstrap run if it doesn't already exist.
+# This file is gitignored — never put real key values in the repo itself.
+export ANTHROPIC_API_KEY=""
+export OPENAI_API_KEY=""
+export HF_TOKEN=""

@@ -1,0 +1,89 @@
+# Powerlevel10k instant prompt — must stay at the very top
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+fi
+
+export ZSH="$HOME/.oh-my-zsh"
+ZSH_THEME="powerlevel10k/powerlevel10k"
+
+plugins=(
+  git
+  zsh-autosuggestions
+  zsh-syntax-highlighting
+  fzf-tab
+  docker
+  node
+  python
+  golang
+  z
+)
+
+source $ZSH/oh-my-zsh.sh
+
+# ── Modern CLI aliases ─────────────────────────────────────
+alias ls="eza --icons"
+alias ll="eza -lah --git --icons"
+alias lt="eza --tree --icons -L 2"
+alias cat="batcat --style=plain"
+alias fd="fdfind"
+alias grep="rg"
+
+# ── Navigation ─────────────────────────────────────────────
+alias ..="cd .."
+alias ...="cd ../.."
+alias dev="cd ~/projects"
+
+# ── Git shortcuts ──────────────────────────────────────────
+alias gs="git status"
+alias gp="git push"
+alias gl="git pull"
+alias gc="git commit"
+alias gco="git checkout"
+alias gd="git diff"
+alias gb="git branch"
+alias glog="git log --oneline --graph --decorate"
+
+# ── Docker shortcuts ───────────────────────────────────────
+alias dps="docker ps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'"
+alias dcu="docker compose up -d"
+alias dcd="docker compose down"
+alias dcl="docker compose logs -f"
+
+# ── History ────────────────────────────────────────────────
+HISTSIZE=50000
+SAVEHIST=50000
+setopt HIST_IGNORE_DUPS
+setopt HIST_IGNORE_SPACE
+setopt SHARE_HISTORY
+setopt AUTO_CD
+
+# ── SSH agent auto-start ───────────────────────────────────
+if [ -z "$SSH_AUTH_SOCK" ]; then
+  eval "$(ssh-agent -s)" > /dev/null
+  for key in ~/.ssh/id_ed25519_*(N); do
+    [[ "$key" == *.pub ]] && continue
+    ssh-add "$key" 2>/dev/null
+  done
+fi
+
+# ── Tool initializations ──────────────────────────────────
+# fnm (Node)
+export PATH="$HOME/.local/share/fnm:$PATH"
+eval "$(fnm env --use-on-cd)"
+
+# uv (Python)
+export PATH="$HOME/.local/bin:$PATH"
+
+# Rust / cargo — no-op until/unless rustup is actually installed
+[ -f "$HOME/.cargo/env" ] && source "$HOME/.cargo/env"
+
+# Go
+export PATH=$PATH:/usr/local/go/bin
+export GOPATH=$HOME/go
+export PATH=$PATH:$GOPATH/bin
+
+# ── Local secrets (untracked, gitignored) ─────────────────
+[ -f "$HOME/.zshrc.local" ] && source "$HOME/.zshrc.local"
+
+# Powerlevel10k config — must stay at the very bottom
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh

@@ -1,0 +1,12 @@
+# Defense-in-depth: the linking mechanism is an explicit allowlist, so
+# nothing secret should ever be staged in the first place — this is a
+# second line of defense, not the primary control.
+id_ed25519*
+!id_ed25519*.pub
+*.pem
+*.key
+.credentials.json
+.env
+.env.*
+zshrc.local
+*.bak.*

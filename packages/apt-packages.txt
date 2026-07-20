@@ -1,0 +1,21 @@
+# Curated base package list for wsl/01-apt-base.sh.
+# One package per line, comments allowed. Keep alphabetical within groups.
+
+# core
+curl
+wget
+git
+gh
+tmux
+vim
+tree
+htop
+unzip
+
+# modern CLI replacements (eza kept, exa dropped — exa is unmaintained)
+bat
+eza
+fd-find
+fzf
+jq
+ripgrep

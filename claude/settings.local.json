@@ -1,0 +1,31 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 *)",
+      "Bash(command -v npm)",
+      "Bash(npm ls *)",
+      "Bash(command -v pipx)",
+      "Bash(pipx list *)",
+      "Bash(command -v cargo)",
+      "Read(//mnt/c/Users/**)",
+      "Read(//mnt/c/Users/dylan/**)",
+      "Read(//etc/**)",
+      "Bash(timeout 55 powershell.exe -NoProfile -Command \"winget list --accept-source-agreements\")",
+      "Bash(powershell.exe -NoProfile -Command \"if \\(Get-Command code -ErrorAction SilentlyContinue\\) { code --version } else { 'code not on PATH' }\")",
+      "Bash(powershell.exe -NoProfile -Command \"if \\(Get-Command code -ErrorAction SilentlyContinue\\) { code --list-extensions } else { 'n/a' }\")",
+      "Bash(command -v conda)",
+      "Bash(conda --version)",
+      "Bash(command -v micromamba)",
+      "Bash(micromamba --version)",
+      "Bash(command -v dotnet)",
+      "Bash(fnm list *)",
+      "Bash(npm list *)",
+      "Bash(corepack --version)",
+      "Bash(go version *)",
+      "Bash(dpkg -l)",
+      "Bash(dpkg -L bat)",
+      "Read(//usr/bin/**)",
+      "Bash(env)"
+    ]
+  }
+}
