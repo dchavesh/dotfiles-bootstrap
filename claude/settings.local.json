@@ -24,8 +24,7 @@
       "Bash(go version *)",
       "Bash(dpkg -l)",
       "Bash(dpkg -L bat)",
-      "Read(//usr/bin/**)",
-      "Bash(env)"
+      "Read(//usr/bin/**)"
     ]
   }
 }

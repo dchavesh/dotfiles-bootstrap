@@ -46,6 +46,40 @@ backup_and_link() {
   ln -s "$src" "$dst"
 }
 
+# validate_field <value> <description> <extended-regex>
+# Aborts with a clear error if $value doesn't fully match the given regex.
+# Every manifest-driven value (ssh/identities.conf, git/identities.conf)
+# gets run through this before it's ever interpolated into a generated
+# file, so a malformed/malicious manifest row fails loudly here instead of
+# reaching a templating step.
+validate_field() {
+  local value="$1" description="$2" pattern="$3"
+  if ! [[ "$value" =~ ^${pattern}$ ]]; then
+    log_warn "manifest value '$value' failed validation ($description) — aborting"
+    exit 1
+  fi
+}
+
+# render_template <template-file> <PLACEHOLDER1> <value1> [<PLACEHOLDER2> <value2> ...]
+# Pure bash substitution, deliberately not sed/awk -- a value can never
+# escape into templating-engine syntax (e.g. sed's s///e execute flag)
+# because there is no engine here, just string replacement. Prints to stdout,
+# always with exactly one trailing newline (command substitution below
+# strips the template's own trailing newline(s), so it's added back here --
+# without this, output silently loses its trailing newline every time,
+# breaking idempotency comparisons against files written some other way).
+render_template() {
+  local tmpl="$1"; shift
+  local content
+  content="$(cat "$tmpl")"
+  while [ "$#" -ge 2 ]; do
+    local placeholder="$1" value="$2"
+    content="${content//\{\{${placeholder}\}\}/${value}}"
+    shift 2
+  done
+  printf '%s\n' "$content"
+}
+
 # render_if_changed <rendered-content-file> <target-file>
 # Compares freshly rendered content against the target; only replaces
 # (with a timestamped backup) if it actually differs.

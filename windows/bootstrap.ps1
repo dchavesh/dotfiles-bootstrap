@@ -4,10 +4,12 @@ $ErrorActionPreference = "Stop"
 $here = $PSScriptRoot
 
 $steps = @(
+    "00-wslconfig.ps1",
     "01-winget-packages.ps1",
     "02-install-wsl.ps1",
     "03-fonts.ps1",
-    "04-windows-terminal.ps1"
+    "04-windows-terminal.ps1",
+    "05-vscode-settings.ps1"
 )
 
 foreach ($step in $steps) {

@@ -32,7 +32,7 @@ clone_or_update https://github.com/Aloxaf/fzf-tab "$ZSH_CUSTOM/plugins/fzf-tab"
 clone_or_update https://github.com/romkatv/powerlevel10k.git "$ZSH_CUSTOM/themes/powerlevel10k"
 
 CURRENT_SHELL="$(getent passwd "$USER" | cut -d: -f7)"
-if [ "$CURRENT_SHELL" = "$(command -v zsh)" ]; then
+if [ "$(readlink -f "$CURRENT_SHELL" 2>/dev/null || echo "$CURRENT_SHELL")" = "$(readlink -f "$(command -v zsh)")" ]; then
   log_ok "default shell (zsh)"
 else
   log_changed "default shell -> zsh (requires sudo, takes effect next login)"

@@ -16,7 +16,12 @@ if (-not (Test-Path $settingsPath)) {
     exit 0
 }
 
-$settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
+try {
+    $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
+} catch {
+    Write-Warning "settings.json isn't parseable as strict JSON (e.g. it has `"//`" comments, which Windows Terminal allows but ConvertFrom-Json doesn't) -- skipping the font/default-profile patch rather than aborting the rest of the bootstrap. Set the Ubuntu profile's font to 'MesloLGS NF' by hand in Windows Terminal's settings UI."
+    exit 0
+}
 
 $ubuntuProfile = $settings.profiles.list | Where-Object { $_.name -match "Ubuntu" } | Select-Object -First 1
 if (-not $ubuntuProfile) {

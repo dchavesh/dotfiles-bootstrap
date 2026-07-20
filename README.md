@@ -8,17 +8,23 @@ multi-identity SSH setup — without ever committing secrets.
 ## How it's organized
 
 ```
-windows/    PowerShell — winget packages, WSL install
+windows/    PowerShell — .wslconfig sizing, winget packages, WSL install, VS Code settings
 wsl/        bash — apt packages, zsh/oh-my-zsh/p10k, runtimes, dotfile linking
-home/       tracked whole-file dotfiles (.zshrc, .p10k.zsh, gitconfig skeleton)
+home/       tracked whole-file dotfiles (.zshrc, .p10k.zsh, gitconfig skeleton, tmux.conf, CLAUDE.md)
 claude/     allowlisted subset of ~/.claude (never the whole directory)
 ssh/        non-secret SSH identity manifest + Host-block template (see ssh/README.md)
 git/        non-secret git identity manifest, directory-scoped (see git/README.md)
-vscode/     extension ID list
+vscode/     extension ID list + one-time settings.json copy (see vscode/README.md)
 playwright/ WSL-chrome vs Windows-chrome config snippets
 packages/   curated apt package list
 docs/       manual-steps checklist + open questions
 ```
+
+**Agent navigability**: `home/projects-claude.md` is symlinked to
+`~/projects/CLAUDE.md` — a short breadcrumb any Claude Code (or other
+agent) session picks up automatically when working in any of the four
+identity directories, pointing at this repo and flagging the `blite`
+GitHub-vs-GitLab ambiguity as something to ask about, not guess.
 
 **Linking mechanism**: a small `backup_and_link()` bash helper
 (`wsl/lib/common.sh`) applied to an explicit allowlist

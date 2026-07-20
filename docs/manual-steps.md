@@ -16,6 +16,10 @@ since it's how you clone this (private) repo in the first place. See
 - [ ] If the msstore "Visual Studio Code (User)" track is still installed
       alongside the winget one, remove the duplicate yourself via
       Settings → Apps (bootstrap scripts install, they don't uninstall).
+- [ ] Run `wsl --shutdown` (from PowerShell, not inside WSL) when you're
+      not mid-work, then reopen WSL, so `windows/00-wslconfig.ps1`'s
+      memory/processor/networking sizing actually takes effect. This kills
+      every running WSL process, which is why it's not automated.
 
 ## WSL
 
