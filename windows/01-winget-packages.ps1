@@ -8,6 +8,16 @@ if (-not (Get-Command winget -ErrorAction SilentlyContinue)) {
     exit 1
 }
 
+# Fresh machines (or a just-installed/updated App Installer) commonly have
+# missing or uninitialized source index data -- winget error 0x8a15000f,
+# "Faltan los datos requeridos por el origen" / source data missing --
+# which makes every subsequent `winget list`/`winget install` fail.
+# `source reset --force` is winget's own documented fix (it re-registers
+# and re-syncs every default source from scratch); `source update` alone
+# only helps when the index is stale, not when it's missing entirely.
+# `--force` skips reset's interactive "are you sure?" confirmation.
+winget source reset --force | Out-Null
+
 # One-time, deterministic agreement acceptance -- without this, the very
 # first `winget list` probe below (not just `winget install`) can block on
 # an interactive "Do you agree?" prompt on a genuinely fresh machine, which

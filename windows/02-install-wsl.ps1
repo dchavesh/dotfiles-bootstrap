@@ -11,7 +11,20 @@ $ErrorActionPreference = "Stop"
 
 $distro = "Ubuntu-24.04"
 $installedAliases = @("Ubuntu-24.04", "Ubuntu")
-$existing = (wsl -l -q 2>$null) | ForEach-Object { $_ -replace "`0", "" } | Where-Object { $installedAliases -contains $_.Trim() }
+
+# `wsl -l -q` doesn't just return an empty list when WSL isn't installed at
+# all yet (as opposed to "installed but no distros") -- it throws, and
+# PowerShell 7's native-command error handling turns that into a
+# terminating exception under $ErrorActionPreference = "Stop" regardless
+# of the `2>$null` redirect. Confirmed live on a fresh machine where the
+# Microsoft.WSL winget package hadn't installed yet. Any failure here
+# unambiguously means "not installed" -- treat it as such instead of
+# crashing the whole bootstrap run.
+try {
+    $existing = (wsl -l -q 2>$null) | ForEach-Object { $_ -replace "`0", "" } | Where-Object { $installedAliases -contains $_.Trim() }
+} catch {
+    $existing = $null
+}
 
 if ($existing) {
     Write-Host "  [ok]      WSL distro '$($existing.Trim())'"
