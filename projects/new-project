@@ -1,0 +1,63 @@
+#!/usr/bin/env bash
+# new-project <identity> <category> <name>
+#
+# Creates ~/projects/<identity>/<category>/<slug>, git-inits it (the
+# directory-scoped identity system resolves the right user.email
+# automatically -- see ../git/README.md), and seeds a one-line README.
+# Refuses any identity/category pair not listed in categories.conf, so the
+# taxonomy can't silently drift one stray folder at a time.
+set -euo pipefail
+
+DOTFILES_REPO="$HOME/projects/personal/dotfiles-bootstrap"
+CATEGORIES_CONF="$DOTFILES_REPO/projects/categories.conf"
+
+usage() {
+  echo "usage: new-project <identity> <category> <name>"
+  echo
+  echo "known identity/category pairs:"
+  grep -vE '^\s*(#|$)' "$CATEGORIES_CONF" | awk '{printf "  %s/%s\n", $1, $2}'
+  exit 1
+}
+
+[ "$#" -eq 3 ] || usage
+
+identity="$1"
+category="$2"
+raw_name="$3"
+
+if ! grep -qE "^${identity}[[:space:]]+${category}[[:space:]]" "$CATEGORIES_CONF"; then
+  echo "error: '$identity/$category' isn't in categories.conf" >&2
+  usage
+fi
+
+# kebab-case: lowercase, spaces/underscores -> hyphens, strip anything
+# else except slashes (so university's <term>/<course-slug> shape works).
+slug="$(printf '%s' "$raw_name" \
+  | tr '[:upper:]' '[:lower:]' \
+  | sed -E 's/[[:space:]_]+/-/g; s#[^a-z0-9/-]##g; s/-+/-/g; s#^-|-$##g; s#/-#/#g; s#-/#/#g')"
+
+if [ -z "$slug" ]; then
+  echo "error: '$raw_name' produced an empty slug" >&2
+  exit 1
+fi
+
+target="$HOME/projects/$identity/$category/$slug"
+
+if [ -e "$target" ]; then
+  echo "error: $target already exists" >&2
+  exit 1
+fi
+
+mkdir -p "$target"
+git -C "$target" init -q
+echo "# $(basename "$slug")" > "$target/README.md"
+
+resolved_email="$(git -C "$target" config user.email 2>/dev/null || true)"
+
+echo "created $target"
+if [ -n "$resolved_email" ]; then
+  echo "git identity: $resolved_email"
+else
+  echo "warning: no git identity resolved -- check that $identity is one of the four includeIf-scoped directories" >&2
+fi
+echo "cd $target"

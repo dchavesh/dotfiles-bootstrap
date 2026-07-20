@@ -21,3 +21,20 @@ separate accounts. Source of truth (scripts, manifests, full explanation):
   not found", it's probably a shell alias pointing at a renamed/missing
   binary (this has happened before) — try `command cat` or `\cat` instead
   of assuming the file is unreadable.
+
+**Project layout**: every project lives at
+`~/projects/<identity>/<category>/<slug>` — categories are a fixed,
+per-identity manifest at
+`~/projects/personal/dotfiles-bootstrap/projects/categories.conf`, not
+freeform. Creating a new project by hand instead of checking that manifest
+risks a stray, miscategorized folder. Use:
+```
+new-project <identity> <category> <name>
+```
+(run with no args to list valid identity/category pairs). It creates the
+directory, `git init`s it with the right identity already resolved, and
+seeds a README. Naming conventions differ by domain (plain kebab-case for
+tech, year-prefixed for blite hackathons, term+roman-numeral for
+university coursework) — see
+`~/projects/personal/dotfiles-bootstrap/projects/README.md` before
+inventing a new pattern.

@@ -5,6 +5,7 @@ home/p10k.zsh::.p10k.zsh
 home/gitconfig::.gitconfig
 home/tmux.conf::.tmux.conf
 home/projects-claude.md::projects/CLAUDE.md
+projects/new-project::.local/bin/new-project
 claude/settings.json::.claude/settings.json
 claude/settings.local.json::.claude/settings.local.json
 claude/statusline-command.sh::.claude/statusline-command.sh

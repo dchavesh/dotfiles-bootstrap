@@ -17,14 +17,26 @@ git/        non-secret git identity manifest, directory-scoped (see git/README.m
 vscode/     extension ID list + one-time settings.json copy (see vscode/README.md)
 playwright/ WSL-chrome vs Windows-chrome config snippets
 packages/   curated apt package list
+projects/   project taxonomy + naming conventions + the `new-project` scaffolding tool (see projects/README.md)
 docs/       manual-steps checklist + open questions
 ```
 
 **Agent navigability**: `home/projects-claude.md` is symlinked to
 `~/projects/CLAUDE.md` — a short breadcrumb any Claude Code (or other
 agent) session picks up automatically when working in any of the four
-identity directories, pointing at this repo and flagging the `blite`
-GitHub-vs-GitLab ambiguity as something to ask about, not guess.
+identity directories, pointing at this repo, flagging the `blite`
+GitHub-vs-GitLab ambiguity as something to ask about (not guess), and
+pointing at `new-project` so a new project lands in the right place
+instead of getting created ad hoc.
+
+**Project organization**: every project lives at
+`~/projects/<identity>/<category>/<slug>` — categories are a manifest
+(`projects/categories.conf`), not freeform, and `new-project <identity>
+<category> <name>` creates a correctly-placed, git-identity-resolved,
+README-seeded directory in one shot. Naming conventions differ by domain
+on purpose (kebab-case for tech, year-prefixed for time-boxed work,
+term+roman-numeral for academic coursework) rather than forcing one scheme
+everywhere — see `projects/README.md`.
 
 **Linking mechanism**: a small `backup_and_link()` bash helper
 (`wsl/lib/common.sh`) applied to an explicit allowlist
