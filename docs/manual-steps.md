@@ -3,6 +3,10 @@
 Things that are either inherently interactive, require a GUI toggle with no
 stable config-file to script against, or are one-time account actions.
 
+`gh auth login` isn't listed below — it has to happen *before* any of this,
+since it's how you clone this (private) repo in the first place. See
+`../wsl/README.md`.
+
 ## Windows
 
 - [ ] First launch of Ubuntu from the Start Menu — creates the Linux user
@@ -21,7 +25,6 @@ stable config-file to script against, or are one-time account actions.
       - `id_ed25519_kolora.pub` → github.com (kolora account)
       - `id_ed25519_university.pub` → github.com (university account)
       - `id_ed25519_blite.pub` → github.com **and** gitlab.com (blite account)
-- [ ] `gh auth login` — interactive OAuth device flow.
 - [ ] `aws configure` — sets up native WSL AWS credentials (this repo
       switched away from the old ~/.aws-symlinked-into-Windows pattern).
 - [ ] `az login` — same, for Azure CLI.

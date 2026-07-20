@@ -42,10 +42,14 @@ cd windows
 Then launch Ubuntu from the Start Menu once (interactive first-run, creates
 your Linux user) before moving to WSL.
 
-**Inside WSL:**
+**Inside WSL:** this repo is a **private** GitHub repo, so `git clone` alone
+won't work yet on a fresh machine — install `gh` and authenticate first,
+then use it to clone (it also wires up the git credential helper that
+`home/gitconfig.tmpl` expects):
 ```bash
-sudo apt install -y git
-git clone <this-repo-url> ~/dotfiles-bootstrap
+sudo apt update && sudo apt install -y git gh
+gh auth login
+gh repo clone dchavesh/dotfiles-bootstrap ~/dotfiles-bootstrap
 cd ~/dotfiles-bootstrap/wsl
 bash bootstrap.sh
 ```
@@ -54,9 +58,9 @@ Every script in both `windows/` and `wsl/` is idempotent — re-running is
 always safe and cheap, and is how you pick up after a required reboot or a
 mid-way interruption.
 
-Finish with `docs/manual-steps.md` — SSH pubkey upload, `gh auth login`,
-cloud CLI logins, Docker Desktop's WSL-integration toggle, and Claude Code's
-own login all happen there, deliberately outside any script.
+Finish with `docs/manual-steps.md` — SSH pubkey upload, cloud CLI logins,
+Docker Desktop's WSL-integration toggle, and Claude Code's own login all
+happen there, deliberately outside any script.
 
 ## What's deliberately NOT replicated
 
