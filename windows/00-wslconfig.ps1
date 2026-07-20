@@ -20,6 +20,8 @@ $content = @"
 memory=${memoryGB}GB
 processors=$processors
 networkingMode=mirrored
+
+[experimental]
 autoMemoryReclaim=gradual
 "@
 
