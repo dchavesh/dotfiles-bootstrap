@@ -1,22 +1,28 @@
 #!/usr/bin/env bash
-# Links ~/.gitconfig to the tracked template, then fills in user.email
-# interactively if it isn't already set (the source machine has none global).
+# Renders one ~/.gitconfig-<name> per row in ../git/identities.conf, and
+# makes sure each identity's project directory exists. ~/.gitconfig itself
+# (the includeIf skeleton pointing at these) is pure routing logic with no
+# secrets or per-machine data, so it's just a plain symlinked dotfile,
+# handled by 10-link-dotfiles.sh like any other.
+#
+# No global git user.name/email is ever set, by design -- see ../git/README.md.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
 REPO_ROOT="$(cd .. && pwd)"
 source lib/common.sh
 
-backup_and_link "$REPO_ROOT/home/gitconfig.tmpl" "$HOME/.gitconfig"
+while read -r name dir email; do
+  [ -z "${name:-}" ] && continue
 
-if git config --global user.email >/dev/null 2>&1; then
-  log_ok "git user.email"
-else
-  read -r -p "  git user.email (blank to skip): " EMAIL
-  if [ -n "$EMAIL" ]; then
-    git config --global user.email "$EMAIL"
-    log_changed "git user.email -> $EMAIL"
-    log_info "that wrote through the symlink into home/gitconfig.tmpl — commit it in this repo if you want it tracked"
-  else
-    log_warn "git user.email left unset"
-  fi
-fi
+  expanded_dir="${dir/#\~/$HOME}"
+  mkdir -p "$expanded_dir"
+
+  rendered="$(mktemp)"
+  sed "s|{{EMAIL}}|${email}|" "$REPO_ROOT/git/gitconfig-identity.tmpl" > "$rendered"
+  render_if_changed "$rendered" "$HOME/.gitconfig-${name}"
+  rm -f "$rendered"
+
+  case "$email" in
+    *REPLACE_ME*) log_warn ".gitconfig-${name} has a placeholder email — edit git/identities.conf and re-run this step" ;;
+  esac
+done < <(grep -vE '^\s*(#|$)' "$REPO_ROOT/git/identities.conf")

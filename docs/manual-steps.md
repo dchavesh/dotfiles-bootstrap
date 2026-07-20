@@ -33,6 +33,10 @@ since it's how you clone this (private) repo in the first place. See
       and the statusline script — never `.credentials.json`.
 - [ ] Optionally fill in real values in `~/.zshrc.local` (copied from
       `home/zshrc.local.example` on first bootstrap run, gitignored).
+- [ ] Fill in the real emails for kolora/university/blite in
+      `git/identities.conf` (personal is already set) — they ship as
+      obvious `REPLACE_ME_*` placeholders since there's no way to know
+      them automatically. Re-run `wsl/08-git-config.sh` after editing.
 - [ ] Docker Desktop → Settings → Resources → WSL Integration → toggle on
       for the Ubuntu distro. Docker Desktop's settings format isn't stable
       enough across versions to script reliably — do this by hand once.

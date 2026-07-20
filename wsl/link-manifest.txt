@@ -2,6 +2,7 @@
 # Nothing in $HOME gets linked unless it has a line here.
 home/zshrc::.zshrc
 home/p10k.zsh::.p10k.zsh
+home/gitconfig::.gitconfig
 claude/settings.json::.claude/settings.json
 claude/settings.local.json::.claude/settings.local.json
 claude/statusline-command.sh::.claude/statusline-command.sh

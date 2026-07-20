@@ -5,18 +5,21 @@ exist and have completed its first-run user setup (interactive, Windows
 side — nothing here can do that part for you).
 
 This repo is **private**, so cloning it needs an authenticated `gh`, not
-plain `git clone`:
+plain `git clone`. It lives under `~/projects/personal/` — it's your own
+tooling, so that's the identity it should commit under (see
+`../git/README.md`):
 ```bash
 sudo apt update && sudo apt install -y git gh
 gh auth login
-gh repo clone dchavesh/dotfiles-bootstrap ~/dotfiles-bootstrap
-cd ~/dotfiles-bootstrap/wsl
+mkdir -p ~/projects/personal
+gh repo clone dchavesh/dotfiles-bootstrap ~/projects/personal/dotfiles-bootstrap
+cd ~/projects/personal/dotfiles-bootstrap/wsl
 bash bootstrap.sh
 ```
 
 `gh auth login` here also plants the credential gh uses later for
-`git push`/`git pull` on this repo itself, and is the same login
-`home/gitconfig.tmpl`'s `credential.helper` relies on — no separate
+`git push`/`git pull` on this repo itself, and is the same login each
+identity's `.gitconfig-<name>` `credential.helper` relies on — no separate
 `gh auth login` step needed after bootstrapping.
 
 Runs `00` through `10` in order — see the numbered filenames for what each

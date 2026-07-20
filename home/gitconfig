@@ -1,0 +1,8 @@
+[includeIf "gitdir:~/projects/personal/"]
+	path = ~/.gitconfig-personal
+[includeIf "gitdir:~/projects/kolora/"]
+	path = ~/.gitconfig-kolora
+[includeIf "gitdir:~/projects/university/"]
+	path = ~/.gitconfig-university
+[includeIf "gitdir:~/projects/blite/"]
+	path = ~/.gitconfig-blite

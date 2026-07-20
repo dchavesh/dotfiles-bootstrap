@@ -8,11 +8,12 @@ multi-identity SSH setup — without ever committing secrets.
 ## How it's organized
 
 ```
-windows/    PowerShell — winget packages, WSL install, fonts, Windows Terminal
+windows/    PowerShell — winget packages, WSL install
 wsl/        bash — apt packages, zsh/oh-my-zsh/p10k, runtimes, dotfile linking
-home/       tracked whole-file dotfiles (.zshrc, .p10k.zsh, gitconfig template)
+home/       tracked whole-file dotfiles (.zshrc, .p10k.zsh, gitconfig skeleton)
 claude/     allowlisted subset of ~/.claude (never the whole directory)
-ssh/        non-secret identity manifest + Host-block template (see ssh/README.md)
+ssh/        non-secret SSH identity manifest + Host-block template (see ssh/README.md)
+git/        non-secret git identity manifest, directory-scoped (see git/README.md)
 vscode/     extension ID list
 playwright/ WSL-chrome vs Windows-chrome config snippets
 packages/   curated apt package list
@@ -32,6 +33,14 @@ is a non-secret manifest (names, hosts, aliases, labels) that drives fresh
 `ssh-keygen` runs per machine; no private key ever enters the repo tree. See
 `ssh/README.md`.
 
+**Git identity**: no global `user.name`/`user.email`, ever — personal,
+kolora, university, and blite are separate accounts, and a single global
+identity makes it easy to commit under the wrong one. `git/identities.conf`
+drives directory-scoped identities instead (`~/projects/<name>/` →
+`~/.gitconfig-<name>`, via git's `includeIf`), mirroring the SSH setup.
+Anywhere outside those four directories, `git commit` refuses until you set
+a local override — intentional friction, not a bug. See `git/README.md`.
+
 ## Quick start
 
 **On a brand-new Windows machine:**
@@ -46,13 +55,15 @@ once (interactive first-run, creates your Linux user) before moving to WSL.
 
 **Inside WSL:** this repo is a **private** GitHub repo, so `git clone` alone
 won't work yet on a fresh machine — install `gh` and authenticate first,
-then use it to clone (it also wires up the git credential helper that
-`home/gitconfig.tmpl` expects):
+then use it to clone. It lives under `~/projects/personal/` since it's your
+own tooling — that also gives it a working git identity the moment
+`08-git-config.sh` runs (see the git identity section above):
 ```bash
 sudo apt update && sudo apt install -y git gh
 gh auth login
-gh repo clone dchavesh/dotfiles-bootstrap ~/dotfiles-bootstrap
-cd ~/dotfiles-bootstrap/wsl
+mkdir -p ~/projects/personal
+gh repo clone dchavesh/dotfiles-bootstrap ~/projects/personal/dotfiles-bootstrap
+cd ~/projects/personal/dotfiles-bootstrap/wsl
 bash bootstrap.sh
 ```
 
