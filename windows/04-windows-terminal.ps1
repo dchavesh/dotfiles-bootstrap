@@ -25,7 +25,13 @@ try {
 
 $ubuntuProfile = $settings.profiles.list | Where-Object { $_.name -match "Ubuntu" } | Select-Object -First 1
 if (-not $ubuntuProfile) {
-    Write-Warning "No Ubuntu profile found in Windows Terminal settings -- skipping font/default-profile patch."
+    # Windows Terminal only detects newly-installed WSL distros at ITS OWN
+    # startup (dynamic profile generation) -- if it was already open before
+    # 02-install-wsl.ps1 ran, or this is the same bootstrap.ps1 invocation
+    # that just installed WSL moments ago, the Ubuntu profile genuinely
+    # doesn't exist in settings.json yet. Not a bug -- just re-run after WT
+    # has had a chance to see the new distro.
+    Write-Warning "No Ubuntu profile found in Windows Terminal settings. If WSL/Ubuntu was just installed, Windows Terminal hasn't picked it up yet -- close every Windows Terminal window, reopen it, then re-run this script (or the full bootstrap). Skipping for now."
     exit 0
 }
 
