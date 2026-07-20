@@ -19,10 +19,13 @@ cd windows
    On a genuinely fresh machine this commonly requires a **reboot** — the
    script tells you when that happened; re-run `bootstrap.ps1` afterward,
    already-done steps no-op.
-3. **`03-fonts.ps1`** — installs MesloLGS NF (powerlevel10k's font) for the
-   current user, no admin needed.
-4. **`04-windows-terminal.ps1`** — sets that font on the Ubuntu profile and
-   confirms it's the default profile, backing up `settings.json` first.
+
+(There used to be a font-install + Windows Terminal font-patch step here.
+Dropped: Nerd Font glyphs never rendered reliably in this Windows Terminal
+setup anyway, so it was two extra fragile scripts — a font downloader and a
+JSON patcher — solving a problem that didn't actually exist day to day. The
+zsh prompt/theme is unchanged; it just runs without icons, same as it
+already did on the source machine.)
 
 ## Manual steps this doesn't cover
 

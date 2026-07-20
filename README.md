@@ -8,7 +8,7 @@ multi-identity SSH setup — without ever committing secrets.
 ## How it's organized
 
 ```
-windows/    PowerShell — winget packages, WSL install, fonts, Windows Terminal
+windows/    PowerShell — winget packages, WSL install
 wsl/        bash — apt packages, zsh/oh-my-zsh/p10k, runtimes, dotfile linking
 home/       tracked whole-file dotfiles (.zshrc, .p10k.zsh, gitconfig template)
 claude/     allowlisted subset of ~/.claude (never the whole directory)
