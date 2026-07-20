@@ -1,11 +1,39 @@
 # dotfiles-bootstrap
 
-Reproduces a Windows 11 + WSL2 Ubuntu dev environment on a new machine:
-Windows-side apps (winget), WSL-side runtimes/CLIs/shell (apt + a handful of
-official installers), dotfiles, a curated slice of `~/.claude`, and a
-multi-identity SSH setup — without ever committing secrets.
+![Windows 11](https://img.shields.io/badge/Windows-11-0078D6?style=flat-square&logo=windows11&logoColor=white)
+![WSL2](https://img.shields.io/badge/WSL2-Ubuntu%2024.04-E95420?style=flat-square&logo=ubuntu&logoColor=white)
+![Shell](https://img.shields.io/badge/shell-bash%20%7C%20PowerShell-4EAA25?style=flat-square&logo=gnubash&logoColor=white)
+![Status](https://img.shields.io/badge/status-private-lightgrey?style=flat-square)
 
-## How it's organized
+Two scripts turn a bare Windows 11 box into *this* machine: apps, shell,
+multi-identity git/SSH, and a project taxonomy — without ever committing a
+secret, and without forcing a fresh Claude Code session to spend its first
+ten tool calls rediscovering conventions that live only in one person's head.
+
+### Contents
+
+- [Why this exists](#why-this-exists)
+- [Layout](#layout)
+- [Identities](#identities)
+- [Design](#design)
+- [Quick start](#quick-start)
+- [What's not replicated](#whats-not-replicated)
+
+## Why this exists
+
+- **Reproducible** — a new machine matches this one after two scripts, not
+  a week of half-remembering what got installed and how.
+- **No secrets, ever** — SSH and git identity manifests are structure
+  only; real keys are generated fresh, per machine, and never enter the
+  repo tree.
+- **Identity-aware** — personal, kolora, university, and blite can't get
+  mixed up, by construction. No global git identity exists to accidentally
+  commit under the wrong one.
+- **Agent-ready** — every convention an agent would otherwise have to
+  guess at (which identity, which SSH alias, where a new project goes) is
+  written down where it actually gets read: `~/projects/CLAUDE.md`.
+
+## Layout
 
 ```
 windows/    PowerShell — .wslconfig sizing, winget packages, WSL install, VS Code settings
@@ -17,65 +45,81 @@ git/        non-secret git identity manifest, directory-scoped (see git/README.m
 vscode/     extension ID list + one-time settings.json copy (see vscode/README.md)
 playwright/ WSL-chrome vs Windows-chrome config snippets
 packages/   curated apt package list
-projects/   project taxonomy + naming conventions + the `new-project` scaffolding tool (see projects/README.md)
+projects/   project taxonomy + naming conventions + the `new-project` scaffolding tool
 docs/       manual-steps checklist + open questions
 ```
 
-**Agent navigability**: `home/projects-claude.md` is symlinked to
-`~/projects/CLAUDE.md` — a short breadcrumb any Claude Code (or other
-agent) session picks up automatically when working in any of the four
-identity directories, pointing at this repo, flagging the `blite`
-GitHub-vs-GitLab ambiguity as something to ask about (not guess), and
-pointing at `new-project` so a new project lands in the right place
+## Identities
+
+Every project lives at `~/projects/<identity>/<category>/<slug>`. Identity
+resolves your git `user.email` and the SSH key a push actually uses —
+automatically, by directory, never by a global default.
+
+| Identity | What it is | Categories | SSH alias |
+|---|---|---|---|
+| `personal` | Your own tooling, experiments, OSS | `clients` `labs` `learning` `oss` `public` `systems` `templates` `tools` | `github-personal` |
+| `kolora` | Make-up product startup | `product` `marketing` `ops` `experiments` | `github-kolora` |
+| `university` | Coursework | `coursework` (term + roman-numeral naming) | `github-university` |
+| `blite` | Software dev startup | `product` `concepts` `brand` `hackathons` `clients` | `github-blite` / `gitlab-blite` |
+
+`new-project <identity> <category> <name>` creates a correctly-placed,
+git-identity-resolved, README-seeded directory in one shot — see
+[`projects/README.md`](projects/README.md).
+
+## Design
+
+**No global git identity.** `git/identities.conf` drives one
+`~/.gitconfig-<name>` per identity, wired in via git's `includeIf` on
+`~/projects/<name>/`. Outside those four directories, `git commit` refuses
+until you set a local override — intentional friction, not a bug. See
+[`git/README.md`](git/README.md).
+
+**Explicit-allowlist linking.** A small `backup_and_link()` bash helper
+(`wsl/lib/common.sh`) applied to `wsl/link-manifest.txt` — not GNU stow,
+not chezmoi. This is a provision-a-new-machine tool, not an ongoing
+multi-machine sync tool, and an allowlist is the right shape for "never
+track anything unless a human added a line for it" — which matters most
+in a directory like `~/.claude` that mixes a handful of config files with
+roughly a gigabyte of runtime state.
+
+**Secrets stay out, structurally.** `ssh/identities.conf` is a non-secret
+manifest (names, hosts, aliases, labels) that drives fresh `ssh-keygen`
+runs per machine — no private key ever has a code path into the repo. See
+[`ssh/README.md`](ssh/README.md).
+
+**Agent breadcrumbs, not tribal knowledge.** `home/projects-claude.md` is
+symlinked to `~/projects/CLAUDE.md`, picked up automatically by any Claude
+Code (or other agent) session working in any of the four identity
+directories. It points at this repo, flags the `blite`
+GitHub-vs-GitLab ambiguity as something to ask about rather than guess,
+and points at `new-project` so a new project lands in the right place
 instead of getting created ad hoc.
-
-**Project organization**: every project lives at
-`~/projects/<identity>/<category>/<slug>` — categories are a manifest
-(`projects/categories.conf`), not freeform, and `new-project <identity>
-<category> <name>` creates a correctly-placed, git-identity-resolved,
-README-seeded directory in one shot. Naming conventions differ by domain
-on purpose (kebab-case for tech, year-prefixed for time-boxed work,
-term+roman-numeral for academic coursework) rather than forcing one scheme
-everywhere — see `projects/README.md`.
-
-**Linking mechanism**: a small `backup_and_link()` bash helper
-(`wsl/lib/common.sh`) applied to an explicit allowlist
-(`wsl/link-manifest.txt`) — not GNU stow, not chezmoi. This is a
-provision-a-new-machine tool, not an ongoing multi-machine sync tool, and an
-explicit allowlist is the right shape for "never track anything unless a
-human added a line for it," which matters most in a directory like
-`~/.claude` that mixes a handful of config files with ~1GB of runtime state.
-
-**Secrets**: never committed. The one exception is SSH — `ssh/identities.conf`
-is a non-secret manifest (names, hosts, aliases, labels) that drives fresh
-`ssh-keygen` runs per machine; no private key ever enters the repo tree. See
-`ssh/README.md`.
-
-**Git identity**: no global `user.name`/`user.email`, ever — personal,
-kolora, university, and blite are separate accounts, and a single global
-identity makes it easy to commit under the wrong one. `git/identities.conf`
-drives directory-scoped identities instead (`~/projects/<name>/` →
-`~/.gitconfig-<name>`, via git's `includeIf`), mirroring the SSH setup.
-Anywhere outside those four directories, `git commit` refuses until you set
-a local override — intentional friction, not a bug. See `git/README.md`.
 
 ## Quick start
 
-**On a brand-new Windows machine:**
+Every script in both `windows/` and `wsl/` is idempotent — re-running is
+always safe and cheap, and is how you pick up after a required reboot or a
+mid-way interruption.
+
+### Windows
+
 ```powershell
 cd windows
 powershell -ExecutionPolicy Bypass -File .\bootstrap.ps1
 ```
-(see `windows/README.md` for why `-ExecutionPolicy Bypass` is there — a
-fresh download commonly comes through flagged as untrusted, which blocks
-unsigned local scripts by default). Then launch Ubuntu from the Start Menu
-once (interactive first-run, creates your Linux user) before moving to WSL.
 
-**Inside WSL:** this repo is a **private** GitHub repo, so `git clone` alone
-won't work yet on a fresh machine — install `gh` and authenticate first,
-then use it to clone. It lives under `~/projects/personal/` since it's your
-own tooling — that also gives it a working git identity the moment
-`08-git-config.sh` runs (see the git identity section above):
+(`windows/README.md` explains why `-ExecutionPolicy Bypass` is there — a
+fresh download commonly comes through flagged as untrusted, which blocks
+unsigned local scripts by default.) Then launch Ubuntu from the Start Menu
+once — interactive first-run, creates your Linux user — before moving to WSL.
+
+### WSL
+
+This is a **private** GitHub repo, so plain `git clone` won't work yet on
+a fresh machine — install `gh` and authenticate first. It lives under
+`~/projects/personal/` since it's your own tooling, which also gives it a
+working git identity the moment `08-git-config.sh` runs:
+
 ```bash
 sudo apt update && sudo apt install -y git gh
 gh auth login
@@ -85,17 +129,13 @@ cd ~/projects/personal/dotfiles-bootstrap/wsl
 bash bootstrap.sh
 ```
 
-Every script in both `windows/` and `wsl/` is idempotent — re-running is
-always safe and cheap, and is how you pick up after a required reboot or a
-mid-way interruption.
+Finish with [`docs/manual-steps.md`](docs/manual-steps.md) — SSH pubkey
+upload, cloud CLI logins, Docker Desktop's WSL-integration toggle, and
+Claude Code's own login all happen there, deliberately outside any script.
 
-Finish with `docs/manual-steps.md` — SSH pubkey upload, cloud CLI logins,
-Docker Desktop's WSL-integration toggle, and Claude Code's own login all
-happen there, deliberately outside any script.
+## What's not replicated
 
-## What's deliberately NOT replicated
-
-See `docs/open-questions.md` for the full list (Chocolatey, a stale
-`~/.dotnet` leftover, etc.) and the plan's original context for why
-micromamba/conda and an unidentified empty `~/.gateguard` directory were
-dropped rather than carried forward.
+See [`docs/open-questions.md`](docs/open-questions.md) for the full list
+(Chocolatey, a stale `~/.dotnet` leftover, etc.) and the reasoning behind
+why micromamba/conda and an unidentified empty `~/.gateguard` directory
+were dropped rather than carried forward.
