@@ -15,6 +15,7 @@
   },
   "effortLevel": "xhigh",
   "tui": "fullscreen",
+  "theme": "dark",
   "remoteControlAtStartup": false,
   "agentPushNotifEnabled": true
 }
