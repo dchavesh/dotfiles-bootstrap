@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
-# Node via fnm (not nvm), corepack, pnpm pinned to match the source machine,
-# and the Claude Code CLI itself -- ../claude/ only restores its config,
+# Node via fnm (not nvm), corepack, pnpm pinned to match the source machine.
+# Claude Code CLI is installed here too, via its native installer (no Node/npm
+# dependency, auto-updates itself) -- ../claude/ only restores its config,
 # something has to actually install the binary that config is for.
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")"
@@ -38,6 +39,6 @@ fi
 if have_cmd claude; then
   log_ok "claude"
 else
-  log_install "@anthropic-ai/claude-code"
-  npm install -g @anthropic-ai/claude-code
+  log_install "claude (native installer)"
+  curl -fsSL https://claude.ai/install.sh | bash
 fi
